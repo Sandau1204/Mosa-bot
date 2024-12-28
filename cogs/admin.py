@@ -51,9 +51,9 @@ class Admin(commands.Cog):
     async def about(self, interaction: Interaction) -> None:
         """Shows basic information about the bot."""
 
-        owner_url = 'https://discord.com/users/700198692694786068'
-        github_project = 'https://github.com/Sandau1204/Mosa-bot'
-        support_url = 'https://discord.gg/kzs8M6vRQ9'
+        owner_url = 'https://discord.com/users/240059262297047041'
+        github_project = 'https://github.com/staciax/Valorant-DiscordBot'
+        support_url = 'https://discord.gg/FJSXPqQZgz'
 
         embed = discord.Embed(color=0xFFFFFF)
         embed.set_author(name='VALORANT BOT PROJECT', url=github_project)
