@@ -13,7 +13,7 @@ class BadArgument(app_commands.AppCommandError):
     pass
 
 
-class ValorantBotError(app_commands.AppCommandError):
+class BotError(app_commands.AppCommandError):
     """base class for all errors raised by the bot"""
 
     pass

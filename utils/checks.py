@@ -6,11 +6,11 @@ import discord
 from discord import Interaction, app_commands
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 
-def _self_bot(interaction: Interaction) -> ValorantBot:
-    bot: ValorantBot = getattr(interaction, 'client', interaction._state._get_client())
+def _self_bot(interaction: Interaction) -> Bot:
+    bot: Bot = getattr(interaction, 'client', interaction._state._get_client())
     return bot
 
 

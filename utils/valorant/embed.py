@@ -12,7 +12,7 @@ from .useful import JSON, GetEmoji, GetFormat, calculate_level_xp, format_relati
 VLR_locale = ValorantTranslator()
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 
 class Embed(discord.Embed):  # Custom Embed
@@ -22,7 +22,7 @@ class Embed(discord.Embed):  # Custom Embed
 
 class GetEmbed:
     @staticmethod
-    def __giorgio_embed(skin: dict[str, Any], bot: ValorantBot) -> discord.Embed:
+    def __giorgio_embed(skin: dict[str, Any], bot: Bot) -> discord.Embed:
         """EMBED DESIGN Giorgio"""
 
         uuid, name, price, icon = skin['uuid'], skin['name'], skin['price'], skin['icon']
@@ -40,7 +40,7 @@ class GetEmbed:
         player: str,
         offer: dict[str, Any],
         response: dict[str, Any],
-        bot: ValorantBot,
+        bot: Bot,
     ) -> list[discord.Embed]:
         """Embed Store"""
 
@@ -113,7 +113,7 @@ class GetEmbed:
     # ---------- POINT EMBED ---------- #
 
     @staticmethod
-    def point(player: str, wallet: dict[str, Any], response: dict[str, Any], bot: ValorantBot) -> discord.Embed:
+    def point(player: str, wallet: dict[str, Any], response: dict[str, Any], bot: Bot) -> discord.Embed:
         """Embed Point"""
 
         # language
@@ -147,7 +147,7 @@ class GetEmbed:
     # ---------- NIGHT MARKET EMBED ---------- #
 
     @staticmethod
-    def __nightmarket_embed(skins: dict[str, Any], bot: ValorantBot) -> discord.Embed:
+    def __nightmarket_embed(skins: dict[str, Any], bot: Bot) -> discord.Embed:
         """Generate Embed Night Market"""
 
         uuid, name, icon, price, dpice = skins['uuid'], skins['name'], skins['icon'], skins['price'], skins['disprice']
@@ -161,7 +161,7 @@ class GetEmbed:
 
     @classmethod
     def nightmarket(
-        cls, player: str, offer: dict[str, Any], bot: ValorantBot, response: dict[str, Any]
+        cls, player: str, offer: dict[str, Any], bot: Bot, response: dict[str, Any]
     ) -> discord.Embed:
         """Embed Night Market"""
 
@@ -247,7 +247,7 @@ class GetEmbed:
         player: str,
         offer: dict[str, Any],
         response: dict[str, Any],
-        bot: ValorantBot,
+        bot: Bot,
     ) -> list[discord.Embed]:
         description_format = response.get('RESPONSE_ALL')
 

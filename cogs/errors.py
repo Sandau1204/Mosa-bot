@@ -22,11 +22,11 @@ from utils.errors import (
     HandshakeError,
     NotOwner,
     ResponseError,
-    ValorantBotError,
+    BotError,
 )
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 app_cmd_scope = 'https://cdn.discordapp.com/attachments/934041100048535563/979410875226128404/applications.commands.png'
 
@@ -34,8 +34,8 @@ app_cmd_scope = 'https://cdn.discordapp.com/attachments/934041100048535563/97941
 class ErrorHandler(commands.Cog):
     """Error handler"""
 
-    def __init__(self, bot: ValorantBot) -> None:
-        self.bot: ValorantBot = bot
+    def __init__(self, bot: Bot) -> None:
+        self.bot: Bot = bot
         bot.tree.on_error = self.on_app_command_error
 
     async def on_app_command_error(self, interaction: Interaction, error: AppCommandError) -> None:
@@ -52,7 +52,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, BadArgument):
             error_message = 'Bad argument.'
         elif isinstance(
-            error, (ValorantBotError | ResponseError | HandshakeError | DatabaseError | AuthenticationError)
+            error, (BotError | ResponseError | HandshakeError | DatabaseError | AuthenticationError)
         ):
             error_message = error
         elif isinstance(error, ResponseError):
@@ -70,7 +70,7 @@ class ErrorHandler(commands.Cog):
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context[ValorantBot], error: Exception) -> None:
+    async def on_command_error(self, ctx: commands.Context[Bot], error: Exception) -> None:
         embed = discord.Embed(color=0xFE676E)
 
         if isinstance(error, CommandNotFound):
@@ -99,5 +99,5 @@ class ErrorHandler(commands.Cog):
         await ctx.send(embed=embed, delete_after=30, ephemeral=True)
 
 
-async def setup(bot: ValorantBot) -> None:
+async def setup(bot: Bot) -> None:
     await bot.add_cog(ErrorHandler(bot))

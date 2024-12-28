@@ -10,7 +10,7 @@ import discord
 from discord import Forbidden, HTTPException, Interaction, app_commands
 from discord.ext import commands, tasks
 
-from utils.errors import ValorantBotError
+from utils.errors import BotError
 from utils.locale_v2 import ValorantTranslator
 from utils.valorant import view as View
 from utils.valorant.cache import create_json
@@ -23,12 +23,12 @@ from utils.valorant.useful import JSON, GetEmoji, GetItems, format_relative
 VLR_locale = ValorantTranslator()
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 
 class Notify(commands.Cog):
-    def __init__(self, bot: ValorantBot) -> None:
-        self.bot: ValorantBot = bot
+    def __init__(self, bot: Bot) -> None:
+        self.bot: Bot = bot
         self.endpoint: API_ENDPOINT = None  # type: ignore
         self.db: DATABASE = None  # type: ignore
         self.notifys.start()
@@ -172,7 +172,7 @@ class Notify(commands.Cog):
             for skin in notify_data:
                 if skin['id'] == str(interaction.user.id) and skin['uuid'] == skin_uuid:  # type: ignore
                     skin_already = response.get('SKIN_ALREADY_IN_LIST')
-                    raise ValorantBotError(skin_already.format(emoji=emoji, skin=name))  # type: ignore
+                    raise BotError(skin_already.format(emoji=emoji, skin=name))  # type: ignore
 
             payload = {'id': str(interaction.user.id), 'uuid': skin_uuid}
 
@@ -199,7 +199,7 @@ class Notify(commands.Cog):
             await interaction.followup.send(embed=embed, view=view)
             return
 
-        raise ValorantBotError(response.get('NOT_FOUND'))
+        raise BotError(response.get('NOT_FOUND'))
 
     @notify.command(name='list', description='View skins you have set a for notification.')
     # @dynamic_cooldown(cooldown_5s)
@@ -284,7 +284,7 @@ class Notify(commands.Cog):
 
         if len(user_skin_list) == 0:
             empty_list = response_test.get('EMPTY_LIST')
-            raise ValorantBotError(empty_list)
+            raise BotError(empty_list)
 
         channel_send = interaction.user if data['dm_message'] else self.bot.get_channel(int(data['notify_channel']))
 
@@ -312,17 +312,17 @@ class Notify(commands.Cog):
                 await channel_send.send(embeds=embeds)  # type: ignore
 
             else:
-                raise ValorantBotError(response_test.get('NOTIFY_TURN_OFF'))
+                raise BotError(response_test.get('NOTIFY_TURN_OFF'))
 
         except Forbidden as e:
             if channel_send == interaction.user:
-                raise ValorantBotError(response_test.get('PLEASE_ALLOW_DM_MESSAGE')) from e
-            raise ValorantBotError(response_test.get('BOT_MISSING_PERM')) from e
+                raise BotError(response_test.get('PLEASE_ALLOW_DM_MESSAGE')) from e
+            raise BotError(response_test.get('BOT_MISSING_PERM')) from e
         except HTTPException as e:
-            raise ValorantBotError(response_test.get('FAILED_SEND_NOTIFY')) from e
+            raise BotError(response_test.get('FAILED_SEND_NOTIFY')) from e
         except Exception as e:
             print(e)
-            raise ValorantBotError(f"{response_test.get('FAILED_SEND_NOTIFY')} - {e}") from e
+            raise BotError(f"{response_test.get('FAILED_SEND_NOTIFY')} - {e}") from e
         else:
             await interaction.followup.send(
                 embed=Embed(response_test.get('NOTIFY_IS_WORKING'), color=0x77DD77), ephemeral=True
@@ -334,5 +334,5 @@ class Notify(commands.Cog):
     #     ...
 
 
-async def setup(bot: ValorantBot) -> None:
+async def setup(bot: Bot) -> None:
     await bot.add_cog(Notify(bot))

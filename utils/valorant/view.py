@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 import discord
 from discord import ButtonStyle, Interaction, TextStyle, ui
 
-from ..errors import ValorantBotError
+from ..errors import BotError
 from ..locale_v2 import ValorantTranslator
 from .resources import get_item_type
 
@@ -18,7 +18,7 @@ from .useful import JSON, GetEmoji, GetItems, format_relative
 VLR_locale = ValorantTranslator()
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
     from .db import DATABASE
 
@@ -105,10 +105,10 @@ class _NotifyListButton(ui.Button):
 class NotifyViewList(ui.View):
     skin_source: dict
 
-    def __init__(self, interaction: Interaction[ValorantBot], response: dict[str, Any]) -> None:
+    def __init__(self, interaction: Interaction[Bot], response: dict[str, Any]) -> None:
         self.interaction: Interaction = interaction
         self.response = response
-        self.bot: ValorantBot = interaction.client
+        self.bot: Bot = interaction.client
         self.default_language = 'en-US'
         super().__init__(timeout=600)
 
@@ -256,13 +256,13 @@ class TwoFA_UI(ui.Modal, title='Two-factor authentication'):
 # inspired by https://github.com/giorgi-o
 class BaseBundle(ui.View):
     def __init__(
-        self, interaction: Interaction[ValorantBot], entries: dict[str, Any], response: dict[str, Any]
+        self, interaction: Interaction[Bot], entries: dict[str, Any], response: dict[str, Any]
     ) -> None:
         self.interaction: Interaction = interaction
         self.entries = entries
         self.response = response
         self.language = str(VLR_locale)
-        self.bot: ValorantBot = interaction.client
+        self.bot: Bot = interaction.client
         self.current_page: int = 0
         self.embeds: list[list[discord.Embed]] = []
         self.page_format = {}
@@ -442,7 +442,7 @@ class BaseBundle(ui.View):
             return
 
         not_found_bundle = self.response.get('NOT_FOUND_BUNDLE')
-        raise ValorantBotError(not_found_bundle)
+        raise BotError(not_found_bundle)
 
     async def start_furture(self) -> None:
         """Starts the featured bundle view"""

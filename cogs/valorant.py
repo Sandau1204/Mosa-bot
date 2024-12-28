@@ -8,7 +8,7 @@ from discord.ext import commands, tasks
 from discord.utils import MISSING
 
 from utils.checks import owner_only
-from utils.errors import ValorantBotError
+from utils.errors import BotError
 from utils.locale_v2 import ValorantTranslator
 from utils.valorant import cache as Cache, useful, view as View
 from utils.valorant.db import DATABASE
@@ -20,14 +20,14 @@ from utils.valorant.resources import setup_emoji
 VLR_locale = ValorantTranslator()
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 
 class ValorantCog(commands.Cog, name='Valorant'):
     """Valorant API Commands"""
 
-    def __init__(self, bot: ValorantBot) -> None:
-        self.bot: ValorantBot = bot
+    def __init__(self, bot: Bot) -> None:
+        self.bot: Bot = bot
         self.endpoint: API_ENDPOINT = MISSING
         self.db: DATABASE = MISSING
         self.reload_cache.start()
@@ -76,7 +76,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
             auth.locale_code = locale_code  # type: ignore
             data = await auth.temp_auth(username, password)
         elif username or password:
-            raise ValorantBotError('Please provide both username and password!')
+            raise BotError('Please provide both username and password!')
         else:
             data = await self.db.is_data(user_id, locale_code)  # type: ignore
         data['locale_code'] = locale_code  # type: ignore
@@ -87,7 +87,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
     @app_commands.command(description='Log in with your Riot acoount')
     @app_commands.describe(username='Input username', password='Input password')
     # @dynamic_cooldown(cooldown_5s)
-    async def login(self, interaction: Interaction[ValorantBot], username: str, password: str) -> None:
+    async def login(self, interaction: Interaction[Bot], username: str, password: str) -> None:
         response = ResponseLanguage(interaction.command.name, interaction.locale)  # type: ignore
 
         user_id = interaction.user.id
@@ -103,7 +103,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
                 embed = Embed(f"{response.get('SUCCESS')} **{login['player']}!**")  # type: ignore
                 return await interaction.followup.send(embed=embed, ephemeral=True)
 
-            raise ValorantBotError(f"{response.get('FAILED')}")
+            raise BotError(f"{response.get('FAILED')}")
 
         elif authenticate['auth'] == '2fa':  # type: ignore
             cookies = authenticate['cookie']  # type: ignore
@@ -114,7 +114,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
 
     @app_commands.command(description='Logout and Delete your account from database')
     # @dynamic_cooldown(cooldown_5s)
-    async def logout(self, interaction: Interaction[ValorantBot]) -> None:
+    async def logout(self, interaction: Interaction[Bot]) -> None:
         await interaction.response.defer(ephemeral=True)
 
         response = ResponseLanguage(interaction.command.name, interaction.locale)  # type: ignore
@@ -124,19 +124,19 @@ class ValorantCog(commands.Cog, name='Valorant'):
             if logout:
                 embed = Embed(response.get('SUCCESS'))
                 return await interaction.followup.send(embed=embed, ephemeral=True)
-            raise ValorantBotError(response.get('FAILED'))
+            raise BotError(response.get('FAILED'))
 
     @app_commands.command(description='Shows your daily store in your accounts')
     @app_commands.guild_only()
     # @dynamic_cooldown(cooldown_5s)
-    async def store(self, interaction: Interaction[ValorantBot]) -> None:
+    async def store(self, interaction: Interaction[Bot]) -> None:
         await interaction.response.defer()
 
         # language
         response = ResponseLanguage(interaction.command.name, interaction.locale)  # type: ignore
 
         if not interaction.guild:
-            raise ValorantBotError('This command can only be used in a server')
+            raise BotError('This command can only be used in a server')
 
         # setup emoji
         await setup_emoji(self.bot, interaction.guild, interaction.locale)  # type: ignore
@@ -156,7 +156,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
     @app_commands.command(description='View your remaining Valorant and Riot Points (VP/RP)')
     @app_commands.guild_only()
     # @dynamic_cooldown(cooldown_5s)
-    async def point(self, interaction: Interaction[ValorantBot]) -> None:
+    async def point(self, interaction: Interaction[Bot]) -> None:
         # check if user is logged in
 
         await interaction.response.defer()
@@ -164,7 +164,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
         response = ResponseLanguage(interaction.command.name, interaction.locale)  # type: ignore
 
         if not interaction.guild:
-            raise ValorantBotError('This command can only be used in a server')
+            raise BotError('This command can only be used in a server')
 
         # setup emoji
         await setup_emoji(self.bot, interaction.guild, interaction.locale.value)
@@ -180,7 +180,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
 
     @app_commands.command(description='View your daily/weekly mission progress')
     # @dynamic_cooldown(cooldown_5s)
-    async def mission(self, interaction: Interaction[ValorantBot]) -> None:
+    async def mission(self, interaction: Interaction[Bot]) -> None:
         # check if user is logged in
 
         await interaction.response.defer()
@@ -199,13 +199,13 @@ class ValorantCog(commands.Cog, name='Valorant'):
     @app_commands.command(description='Show skin offers on the nightmarket')
     @app_commands.guild_only()
     # @dynamic_cooldown(cooldown_5s)
-    async def nightmarket(self, interaction: Interaction[ValorantBot]) -> None:
+    async def nightmarket(self, interaction: Interaction[Bot]) -> None:
         # check if user is logged in
 
         await interaction.response.defer()
 
         if not interaction.guild:
-            raise ValorantBotError('This command can only be used in a server')
+            raise BotError('This command can only be used in a server')
 
         # setup emoji
         await setup_emoji(self.bot, interaction.guild, interaction.locale)  # type: ignore
@@ -228,7 +228,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
 
     @app_commands.command(description='View your battlepass current tier')
     # @dynamic_cooldown(cooldown_5s)
-    async def battlepass(self, interaction: Interaction[ValorantBot]) -> None:
+    async def battlepass(self, interaction: Interaction[Bot]) -> None:
         # check if user is logged in
 
         await interaction.response.defer()
@@ -252,13 +252,13 @@ class ValorantCog(commands.Cog, name='Valorant'):
     @app_commands.describe(bundle='The name of the bundle you want to inspect!')
     @app_commands.guild_only()
     # @dynamic_cooldown(cooldown_5s)
-    async def bundle(self, interaction: Interaction[ValorantBot], bundle: str) -> None:
+    async def bundle(self, interaction: Interaction[Bot], bundle: str) -> None:
         await interaction.response.defer()
 
         response = ResponseLanguage(interaction.command.name, interaction.locale.value)  # type: ignore
 
         if not interaction.guild:
-            raise ValorantBotError('This command can only be used in a server')
+            raise BotError('This command can only be used in a server')
 
         # setup emoji
         await setup_emoji(self.bot, interaction.guild, interaction.locale.value)
@@ -290,13 +290,13 @@ class ValorantCog(commands.Cog, name='Valorant'):
     @app_commands.command(description='Show the current featured bundles')
     @app_commands.guild_only()
     # @dynamic_cooldown(cooldown_5s)
-    async def bundles(self, interaction: Interaction[ValorantBot]) -> None:
+    async def bundles(self, interaction: Interaction[Bot]) -> None:
         await interaction.response.defer()
 
         response = ResponseLanguage(interaction.command.name, interaction.locale.value)  # type: ignore
 
         if not interaction.guild:
-            raise ValorantBotError('This command can only be used in a server')
+            raise BotError('This command can only be used in a server')
 
         # setup emoji
         await setup_emoji(self.bot, interaction.guild, interaction.locale.value)
@@ -315,7 +315,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
     # https://github.com/giorgi-o/SkinPeek/wiki/How-to-get-your-Riot-cookies
     @app_commands.command()
     @app_commands.describe(cookie='Your cookie')
-    async def cookies(self, interaction: Interaction[ValorantBot], cookie: str) -> None:
+    async def cookies(self, interaction: Interaction[Bot], cookie: str) -> None:
         """Login to your account with a cookie"""
 
         await interaction.response.defer(ephemeral=True)
@@ -358,7 +358,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
     @owner_only()
     async def debug(
         self,
-        interaction: Interaction[ValorantBot],
+        interaction: Interaction[Bot],
         bug: Literal['Skin price not loading', 'Emoji not loading', 'Cache not loading'],
     ) -> None:
         await interaction.response.defer(ephemeral=True)
@@ -375,7 +375,7 @@ class ValorantCog(commands.Cog, name='Valorant'):
 
         elif bug == 'Emoji not loading':
             if not interaction.guild:
-                raise ValorantBotError('This command can only be used in a server')
+                raise BotError('This command can only be used in a server')
 
             await setup_emoji(self.bot, interaction.guild, interaction.locale.value, force=True)
 
@@ -386,5 +386,5 @@ class ValorantCog(commands.Cog, name='Valorant'):
         await interaction.followup.send(embed=Embed(success.format(bug=bug)))
 
 
-async def setup(bot: ValorantBot) -> None:
+async def setup(bot: Bot) -> None:
     await bot.add_cog(ValorantCog(bot))

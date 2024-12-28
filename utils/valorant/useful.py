@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any
 import discord
 from dotenv import load_dotenv
 
-from ..errors import ValorantBotError
+from ..errors import BotError
 from ..locale_v2 import ValorantTranslator
 from .resources import get_item_type, points as points_emoji, tiers as tiers_resources
 
@@ -21,7 +21,7 @@ on_replit = bool(os.getenv('ON_REPLIT'))
 VLR_locale = ValorantTranslator()
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 current_season_id = '99ac9283-4dd3-5248-2e01-8baf778affb4'
 current_season_end = datetime(2022, 8, 24, 17, 0, 0)
@@ -177,7 +177,7 @@ class GetItems:
             skin_data = JSON.read('cache')
             skin = skin_data['skins'][uuid]
         except KeyError as e:
-            raise ValorantBotError('Some skin data is missing, plz use `/debug cache`') from e
+            raise BotError('Some skin data is missing, plz use `/debug cache`') from e
         return skin
 
     @staticmethod
@@ -263,7 +263,7 @@ class GetItems:
             uuid = data['skins'][skin_uuid]['tier']
             name = data['tiers'][uuid]['name']
         except KeyError as e:
-            raise ValorantBotError('Some skin data is missing, plz use `/debug cache`') from e
+            raise BotError('Some skin data is missing, plz use `/debug cache`') from e
         return name
 
     @staticmethod
@@ -302,7 +302,7 @@ class GetEmoji:
         return emoji
 
     @classmethod
-    def tier_by_bot(cls, skin_uuid: str, bot: ValorantBot) -> discord.Emoji:
+    def tier_by_bot(cls, skin_uuid: str, bot: Bot) -> discord.Emoji:
         """Get tier emoji from bot"""
 
         emoji = discord.utils.get(bot.emojis, name=GetItems.get_tier_name(skin_uuid) + 'Tier')  # type: ignore
@@ -311,7 +311,7 @@ class GetEmoji:
         return emoji
 
     @staticmethod
-    def point_by_bot(point: str, bot: ValorantBot) -> discord.Emoji | str | None:
+    def point_by_bot(point: str, bot: Bot) -> discord.Emoji | str | None:
         """Get point emoji from bot"""
 
         emoji = discord.utils.get(bot.emojis, name=point)
@@ -411,7 +411,7 @@ class GetFormat:
         try:
             night_offer = offer['BonusStore']['BonusStoreOffers']
         except KeyError as e:
-            raise ValorantBotError(response.get('NIGMARKET_HAS_END', 'Nightmarket has been ended')) from e
+            raise BotError(response.get('NIGMARKET_HAS_END', 'Nightmarket has been ended')) from e
         duration = offer['BonusStore']['BonusStoreRemainingDurationInSeconds']
 
         night_market = {}
@@ -562,4 +562,4 @@ class GetFormat:
                 }
             }
 
-        raise ValorantBotError('Failed to get battlepass info')
+        raise BotError('Failed to get battlepass info')

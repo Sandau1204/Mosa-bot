@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 import discord
 import requests
 
-from ..errors import ValorantBotError
+from ..errors import BotError
 from .local import LocalErrorResponse
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 # ------------------- #
 # credit https://github.com/colinhartigan/
@@ -100,7 +100,7 @@ def __url_to_image(url: str) -> bytes | None:
         return image_value
 
 
-async def setup_emoji(bot: ValorantBot, guild: discord.Guild, local_code: str, force: bool = False) -> None:
+async def setup_emoji(bot: Bot, guild: discord.Guild, local_code: str, force: bool = False) -> None:
     response = LocalErrorResponse('SETUP_EMOJI', local_code)
 
     """Setup emoji"""
@@ -111,7 +111,7 @@ async def setup_emoji(bot: ValorantBot, guild: discord.Guild, local_code: str, f
                 emoji = await guild.create_custom_emoji(name=name, image=__url_to_image(emoji_url))  # type: ignore
             except discord.Forbidden as e:
                 if force:
-                    raise ValorantBotError(response.get('MISSING_PERM')) from e
+                    raise BotError(response.get('MISSING_PERM')) from e
                 continue
             except discord.HTTPException:
                 print(response.get('FAILED_CREATE_EMOJI'))

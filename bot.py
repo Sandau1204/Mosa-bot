@@ -27,7 +27,7 @@ BOT_PREFIX = '-'
 # todo claer white space
 
 
-class ValorantBot(commands.Bot):
+class Bot(commands.Bot):
     debug: bool
     bot_app_info: discord.AppInfo
 
@@ -101,7 +101,7 @@ class ValorantBot(commands.Bot):
 
 
 def run_bot() -> None:
-    bot = ValorantBot()
+    bot = Bot()
     asyncio.run(bot.start())
 
 

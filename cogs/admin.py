@@ -7,18 +7,18 @@ from discord import Interaction, app_commands, ui
 from discord.ext import commands
 
 if TYPE_CHECKING:
-    from bot import ValorantBot
+    from bot import Bot
 
 
 class Admin(commands.Cog):
     """Error handler"""
 
-    def __init__(self, bot: ValorantBot) -> None:
-        self.bot: ValorantBot = bot
+    def __init__(self, bot: Bot) -> None:
+        self.bot: Bot = bot
 
     @commands.command()
     @commands.is_owner()
-    async def sync(self, ctx: commands.Context[ValorantBot], sync_type: Literal['guild', 'global']) -> None:
+    async def sync(self, ctx: commands.Context[Bot], sync_type: Literal['guild', 'global']) -> None:
         """Sync the application commands"""
 
         async with ctx.typing():
@@ -33,7 +33,7 @@ class Admin(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def unsync(self, ctx: commands.Context[ValorantBot], unsync_type: Literal['guild', 'global']) -> None:
+    async def unsync(self, ctx: commands.Context[Bot], unsync_type: Literal['guild', 'global']) -> None:
         """Unsync the application commands"""
 
         async with ctx.typing():
@@ -51,9 +51,9 @@ class Admin(commands.Cog):
     async def about(self, interaction: Interaction) -> None:
         """Shows basic information about the bot."""
 
-        owner_url = 'https://discord.com/users/240059262297047041'
-        github_project = 'https://github.com/staciax/Valorant-DiscordBot'
-        support_url = 'https://discord.gg/FJSXPqQZgz'
+        owner_url = 'https://discord.com/users/700198692694786068'
+        github_project = 'https://github.com/Sandau1204/Mosa-bot'
+        support_url = 'https://discord.gg/kzs8M6vRQ9'
 
         embed = discord.Embed(color=0xFFFFFF)
         embed.set_author(name='VALORANT BOT PROJECT', url=github_project)
@@ -80,5 +80,5 @@ class Admin(commands.Cog):
         await interaction.response.send_message(embed=embed, view=view)
 
 
-async def setup(bot: ValorantBot) -> None:
+async def setup(bot: Bot) -> None:
     await bot.add_cog(Admin(bot))
